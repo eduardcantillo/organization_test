@@ -1,0 +1,38 @@
+##Spring Configuration
+server:
+  port: 8080
+spring:
+  application:
+    name: store-gateway
+  devtools:
+    add-properties: false
+  h2:
+    console:
+      enabled: true
+      path: /h2
+  cloud:
+    commons:
+      inet:
+        utils:
+          default-hostname: localhost
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: receptor
+          uri: http://192.168.20.95:8084
+          predicates:
+            - Path=/receptor/**
+          filters:
+            - RewritePath=/receptor/(?<segment>.*), /receptor/radicar/api/v1/${segment}
+        - id: servicio-foto
+          uri: lb://service-foto
+          predicates:
+            - Path=/foto/**
+        - id: servicio-client
+          uri: lb://service-customer
+          predicates:
+            - Path=/id-type/**
+  profiles:
+    include:
